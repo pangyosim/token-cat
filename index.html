@@ -48,6 +48,7 @@
     background: color-mix(in srgb, var(--bg) 82%, white);
   }
   header .wrap { display: flex; align-items: center; gap: .75rem; height: 4rem; }
+  .brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; color: inherit; }
   .logo { width: 2rem; height: 2rem; border-radius: .45rem; }
   .wordmark { font-family: var(--pixel); font-size: .85rem; letter-spacing: -.02em; }
   header nav { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
@@ -160,8 +161,10 @@
 
 <header>
   <div class="wrap">
-    <img class="logo" src="icon.png" alt="TokenCat 로고">
-    <span class="wordmark">TokenCat</span>
+    <a class="brand" href="./">
+      <img class="logo" src="icon.png" alt="TokenCat 로고">
+      <span class="wordmark">TokenCat</span>
+    </a>
     <nav>
       <div class="lang" role="group" aria-label="Language">
         <button id="lang-ko" aria-pressed="true">KR</button>
