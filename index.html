@@ -3,83 +3,424 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TokenCat 다운로드</title>
+<title>TokenCat</title>
+<meta name="description" content="Claude 토큰 사용량을 메뉴바에 상시 표시하는 픽셀 고양이 앱">
+<meta property="og:title" content="TokenCat">
+<meta property="og:description" content="Claude 토큰 사용량을 메뉴바에 상시 표시하는 픽셀 고양이 앱">
+<meta property="og:image" content="https://pangyosim.github.io/token-cat/icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
 <style>
-  :root { color-scheme: light dark; }
+  /* 아이콘과 같은 라벤더 배경에 검은 고양이 — 브랜드가 밝은 배경 전제라 단일 테마로 간다 */
+  :root {
+    --bg: #e9e7f3;
+    --panel: #ffffff;
+    --ink: #17171c;
+    --muted: #6b6a76;
+    --line: #17171c;
+    --green: #60c860;
+    --green-deep: #2f8f43;
+    --amber: #e8be48;
+    --red: #e86054;
+    --lav-top: #e8e6f2;
+    --lav-bottom: #c4c1d6;
+    --pixel: "Press Start 2P", monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    background: light-dark(#f5f5f7, #1c1c1e); color: light-dark(#1c1c1e, #f5f5f7);
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
+    line-height: 1.6;
   }
-  main { max-width: 40rem; padding: 2rem; text-align: center; }
-  h1 { font-size: 2.5rem; margin: 0; }
-  h1 .cat { margin-right: .4rem; }
-  p.desc { color: light-dark(#6e6e73, #98989d); margin: .5rem 0 2rem; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .75rem; text-align: left; }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 0 1.25rem; }
+  canvas { image-rendering: pixelated; display: block; }
+  a { color: inherit; }
+
+  /* ── 헤더 ── */
+  header {
+    border-bottom: 2px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 82%, white);
+  }
+  header .wrap { display: flex; align-items: center; gap: .75rem; height: 4rem; }
+  .logo { width: 2rem; height: 2rem; border-radius: .45rem; }
+  .wordmark { font-family: var(--pixel); font-size: .85rem; letter-spacing: -.02em; }
+  header nav { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+  .lang { display: flex; border: 2px solid var(--line); border-radius: .5rem; overflow: hidden; }
+  .lang button {
+    font: inherit; font-size: .78rem; font-weight: 700; padding: .3rem .6rem;
+    border: 0; background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .gh { display: inline-flex; align-items: center; text-decoration: none; }
+  .gh svg { width: 1.4rem; height: 1.4rem; }
+
+  /* ── 히어로 ── */
+  .hero { padding: 4rem 0 3.5rem; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3rem; align-items: center; }
+  .eyebrow { font-family: var(--pixel); font-size: .6rem; color: var(--green-deep); margin: 0 0 1rem; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.32; margin: 0 0 1rem; white-space: pre-line; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 2rem; max-width: 30rem; }
+
+  /* 다운로드 */
+  .dl-status { font-family: var(--pixel); font-size: .6rem; color: var(--muted); margin-bottom: .75rem; }
+  .dl-status a { color: var(--green-deep); }
+  .dl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; max-width: 30rem; }
   a.dl {
-    display: block; padding: 1rem 1.25rem; border-radius: .75rem; text-decoration: none;
-    background: light-dark(#fff, #2c2c2e); color: inherit;
-    border: 1px solid light-dark(#e5e5ea, #3a3a3c);
+    display: block; padding: .7rem .9rem; text-decoration: none;
+    background: var(--panel); border: 2px solid var(--line); border-radius: .6rem;
+    box-shadow: 3px 3px 0 var(--line); transition: transform .08s, box-shadow .08s;
   }
-  a.dl:hover { border-color: #0a84ff; }
-  a.dl .os { font-weight: 600; }
-  a.dl .meta { font-size: .8rem; color: light-dark(#6e6e73, #98989d); margin-top: .25rem; }
-  .note { font-size: .8rem; color: light-dark(#6e6e73, #98989d); margin-top: 2rem; line-height: 1.6; }
-  .note code { background: light-dark(#e5e5ea, #3a3a3c); padding: .1rem .35rem; border-radius: .3rem; }
-  #status { color: light-dark(#6e6e73, #98989d); }
-  #status a { color: #0a84ff; }
+  a.dl:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--line); }
+  a.dl:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--line); }
+  a.dl .os { font-weight: 700; font-size: .92rem; }
+  a.dl .meta { font-size: .74rem; color: var(--muted); margin-top: .15rem; }
+  a.dl.primary { background: var(--ink); color: #fff; }
+  a.dl.primary .meta { color: #b9b8c4; }
+  a.dl.primary .os::after { content: " ↓"; color: var(--green); }
+  .dl-note { font-size: .78rem; color: var(--muted); margin-top: .9rem; }
+  .dl-note a { color: var(--green-deep); }
+
+  /* 메뉴바 목업 */
+  .mock {
+    border: 2px solid var(--line); border-radius: .9rem; overflow: hidden;
+    box-shadow: 6px 6px 0 var(--line);
+    background: linear-gradient(160deg, var(--lav-top), var(--lav-bottom));
+  }
+  .menubar {
+    display: flex; align-items: center; gap: .9rem; padding: .4rem .8rem;
+    background: rgba(255, 255, 255, .66); backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(23, 23, 28, .12);
+  }
+  .menubar .stub { display: flex; gap: .6rem; }
+  .menubar .stub i { display: block; width: 1.6rem; height: .45rem; border-radius: .25rem; background: rgba(23, 23, 28, .18); }
+  .menubar .tray { margin-left: auto; display: flex; align-items: center; gap: .7rem; }
+  .menubar .clock { font-size: .72rem; font-weight: 600; color: rgba(23, 23, 28, .75); font-variant-numeric: tabular-nums; }
+  .mock .desk { height: 11rem; position: relative; }
+  .mock .hint {
+    position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%);
+    font-family: var(--pixel); font-size: .55rem; color: rgba(23, 23, 28, .45); white-space: nowrap;
+  }
+  .mock-caption { font-size: .78rem; color: var(--muted); margin-top: .8rem; text-align: center; }
+  .swatch { display: inline-block; width: .6rem; height: .6rem; border: 1px solid var(--line); border-radius: .15rem; vertical-align: -.05rem; }
+
+  /* ── 상태 카드 ── */
+  .states { padding: 3.5rem 0 4rem; border-top: 2px solid var(--line); background: color-mix(in srgb, var(--bg) 55%, white); }
+  h2 { font-size: 1.5rem; margin: 0 0 .4rem; }
+  .sec-sub { color: var(--muted); margin: 0 0 2rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr)); gap: 1rem; }
+  .card { background: var(--panel); border: 2px solid var(--line); border-radius: .8rem; overflow: hidden; box-shadow: 4px 4px 0 var(--line); }
+  .card .stage { background: linear-gradient(160deg, var(--lav-top), var(--lav-bottom)); padding: 1.1rem 0; display: flex; justify-content: center; border-bottom: 2px solid var(--line); }
+  .card .body { padding: .8rem .95rem 1rem; }
+  .card .badge { font-family: var(--pixel); font-size: .5rem; color: var(--green-deep); }
+  .card h3 { margin: .3rem 0 .15rem; font-size: 1rem; }
+  .card p { margin: 0; font-size: .8rem; color: var(--muted); }
+
+  /* ── 설치 안내 ── */
+  .help { padding: 3.5rem 0 4rem; border-top: 2px solid var(--line); }
+  .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .help-card { background: var(--panel); border: 2px solid var(--line); border-radius: .8rem; padding: 1.1rem 1.2rem; box-shadow: 4px 4px 0 var(--line); }
+  .help-card h3 { margin: 0 0 .5rem; font-size: 1rem; }
+  .help-card p { margin: 0; font-size: .85rem; color: var(--muted); }
+  .help-card code, .help-card pre {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .78rem;
+  }
+  .help-card pre {
+    background: var(--ink); color: var(--green); padding: .6rem .8rem; border-radius: .5rem;
+    margin: .7rem 0 0; overflow-x: auto;
+  }
+
+  footer { border-top: 2px solid var(--line); padding: 1.4rem 0 2rem; font-size: .8rem; color: var(--muted); }
+  footer a { color: var(--green-deep); }
+
+  @media (max-width: 800px) {
+    .hero { padding: 2.5rem 0; }
+    .hero .wrap { grid-template-columns: 1fr; gap: 2.2rem; }
+    .help-grid { grid-template-columns: 1fr; }
+    .mock .desk { height: 8rem; }
+  }
+  @media (max-width: 480px) {
+    .dl-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1><span class="cat">🐱</span>TokenCat</h1>
-  <p class="desc">Claude 토큰 사용량을 메뉴바에 상시 표시하는 앱</p>
 
-  <div id="status">다운로드 목록을 불러오는 중…</div>
-  <div class="grid" id="downloads"></div>
+<header>
+  <div class="wrap">
+    <img class="logo" src="icon.png" alt="TokenCat 로고">
+    <span class="wordmark">TokenCat</span>
+    <nav>
+      <div class="lang" role="group" aria-label="Language">
+        <button id="lang-ko" aria-pressed="true">KR</button>
+        <button id="lang-en" aria-pressed="false">EN</button>
+      </div>
+      <a class="gh" href="https://github.com/pangyosim/token-cat" aria-label="GitHub">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      </a>
+    </nav>
+  </div>
+</header>
 
-  <p class="note">
-    macOS: 서명되지 않은 빌드라 처음 실행 시 경고가 뜹니다.
-    앱을 우클릭 → 열기 하거나 <code>xattr -cr /Applications/TokenCat.app</code> 를 실행하세요.<br>
-    Windows: zip 압축을 풀고 <code>TokenCat.exe</code> 를 실행하세요.
-  </p>
-</main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">CLAUDE TOKEN MONITOR</p>
+      <h1 data-i18n="h1"></h1>
+      <p class="sub" data-i18n="sub"></p>
+      <p class="dl-status" id="dl-status"></p>
+      <div class="dl-grid" id="dl-grid"></div>
+      <p class="dl-note" data-i18n-html="dlNote"></p>
+    </div>
+    <div>
+      <div class="mock" aria-hidden="true">
+        <div class="menubar">
+          <div class="stub"><i></i><i></i><i></i></div>
+          <div class="tray">
+            <canvas id="tray-cat" width="45" height="14" style="height:1.05rem"></canvas>
+            <span class="clock">9:41</span>
+          </div>
+        </div>
+        <div class="desk"><span class="hint">^ TokenCat</span></div>
+      </div>
+      <p class="mock-caption">
+        <span class="swatch" style="background:var(--green)"></span>
+        <span class="swatch" style="background:var(--amber)"></span>
+        <span class="swatch" style="background:var(--red)"></span>
+        <span data-i18n="mockCaption"></span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="states">
+  <div class="wrap">
+    <p class="eyebrow" data-i18n="statesEyebrow"></p>
+    <h2 data-i18n="statesH2"></h2>
+    <p class="sec-sub" data-i18n="statesSub"></p>
+    <div class="cards">
+      <div class="card">
+        <div class="stage"><canvas data-motion="run" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="body"><span class="badge">NOW</span><h3 data-i18n="runT"></h3><p data-i18n="runD"></p></div>
+      </div>
+      <div class="card">
+        <div class="stage"><canvas data-motion="ball" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="body"><span class="badge">&lt; 10 MIN</span><h3 data-i18n="ballT"></h3><p data-i18n="ballD"></p></div>
+      </div>
+      <div class="card">
+        <div class="stage"><canvas data-motion="rhythm" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="body"><span class="badge">&lt; 1 HOUR</span><h3 data-i18n="rhythmT"></h3><p data-i18n="rhythmD"></p></div>
+      </div>
+      <div class="card">
+        <div class="stage"><canvas data-motion="sleep" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="body"><span class="badge">1 HOUR +</span><h3 data-i18n="sleepT"></h3><p data-i18n="sleepD"></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="help" id="install">
+  <div class="wrap">
+    <p class="eyebrow">INSTALL</p>
+    <h2 data-i18n="helpH2"></h2>
+    <p class="sec-sub" data-i18n="helpSub"></p>
+    <div class="help-grid">
+      <div class="help-card">
+        <h3>macOS</h3>
+        <p data-i18n="helpMac"></p>
+        <pre>xattr -cr /Applications/TokenCat.app</pre>
+      </div>
+      <div class="help-card">
+        <h3>Windows</h3>
+        <p data-i18n="helpWin"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    © 2026 simpangyo ·
+    <a href="https://github.com/pangyosim/token-cat">GitHub</a> ·
+    <a href="https://github.com/pangyosim/token-cat/releases/latest" data-i18n="footRel"></a>
+  </div>
+</footer>
 
 <script>
-const REPO = "pangyosim/token-cat";
+// ── 앱과 같은 스프라이트 데이터 (tools 의 dump-frames.mjs 가 src/cat.ts 에서 추출) ──
+const DATA = {"motions":{"rhythm":[{"s":["....................","....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo...","..obo.obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................",".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...",".obo..obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...",".obo..obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................",".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo...","..obo.obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0}],"run":[{"s":["....................","......oo.....oo.....","......obo...obo.....","......obbooobbo.....","..oo.obbbbbbbbbo....",".obo.obbbbbbbbbo....",".obo.obbbebbbebo....",".obo.obbbbwwwbbo....",".obbooobbwwwwwo.....","..obbbbooooooo......","...ooobbbbbbbbo.....",".....obbbbbbbbo.....",".....owowoowowo.....","...................."],"dy":-1},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","..oo..obbbbbbbbbo...",".obo..obbbbbbbbbo...",".obo..obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.owowo.....",".....owowo.........."],"dy":0},{"s":["....................","........oo.....oo...","........obo...obo...","........obbooobbo...","..oo...obbbbbbbbbo..",".obo...obbbbbbbbbo..","..obo..obbbebbbebo..","...obo.obbbbwwwbbo..","...obbooobbwwwwwo...","....obbbbooooooo....","....obbbbbbbbbbo....","....obbbbbbbbbbo....","....obobo..owowo....","....owowo..........."],"dy":0},{"s":["....................",".........oo.....oo..",".........obo...obo..",".........obbooobbo..","..oo....obbbbbbbbbo.","..obo...obbbbbbbbbo.","...obo..obbbebbbebo.","....obo.obbbbwwwbbo.","....obbooobbwwwwwo..","...obbbbbooooooo....","...obbbbbbbbbbbbo...","...obbbbbbbbbbbbo...","...obobo....obobo...","...owowo....owowo..."],"dy":-1},{"s":["....................","........oo.....oo...","........obo...obo...","........obbooobbo...","..oo...obbbbbbbbbo..",".obo...obbbbbbbbbo..","..obo..obbbebbbebo..","...obo.obbbbwwwbbo..","...obbooobbwwwwwo...","....obbbbooooooo....","....obbbbbbbbbbo....","....obbbbbbbbbbo....","....owowo..obobo....","...........owowo...."],"dy":0},{"s":["....................","......oo.....oo.....","......obo...obo.....",".......obbooobbo....","..oo..obbbbbbbbbo...",".obo..obbbbbbbbbo...",".obo..obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....owowo.obobo.....",".........owowo......"],"dy":0}],"ball":[{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,12]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,9]},{"s":[".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,6]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooooow..","....obbbbbbbbbooo...","....obbbbbbbbbo.....","....obobo...........","....owowo..........."],"dy":-1,"ball":[18,4]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooooow..","....obbbbbbbbbooo...","....obbbbbbbbbo.....","....obobo...........","....owowo..........."],"dy":-1,"ball":[18,3]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooooow..","....obbbbbbbbbooo...","....obbbbbbbbbo.....","....obobo...........","....owowo..........."],"dy":-1,"ball":[18,5]},{"s":[".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,8]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,11]}],"sleep":[{"s":["....................","....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo...","..obo.obboobboobo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo.zz","..obo.obboobboobo..z",".oboooobbbbbbbbbo.zz",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................","....................",".......oo.....oo..zz",".......obo...obo...z",".......obbooobbo..zz","......obbbbbbbbbo.zz","...oo.obbbbbbbbbo..z","..obo.obboobboobo.zz",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["..................zz","...................z",".......oo.....oo..zz",".......obo...obo..zz",".......obbooobbo...z","......obbbbbbbbbo.zz","...oo.obbbbbbbbbo.zz","..obo.obboobboobo..z",".oboooobbbbbbbbbo.zz",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0}]},"fps":{"rhythm":2,"run":10,"ball":5,"sleep":1}};
 
-// 자산 파일명으로 OS/아키텍처 라벨 결정
-function label(name) {
-  if (name.endsWith(".dmg"))
-    return name.includes("arm64") ? "macOS (Apple Silicon)" : "macOS (Intel)";
-  if (name.includes("win") && name.endsWith(".zip"))
-    return name.includes("arm64") ? "Windows (ARM64)" : "Windows (x64)";
-  return null; // blockmap 등은 숨김
+// 검정 팔레트 (src/cat.ts PALETTES.black)
+const INK = { o: "#0c0c0c", b: "#303030", w: "#303030", a: "#303030", g: "#303030", e: "#60c860", z: "#0c0c0c" };
+const BALL = "#e8c43d";
+const GAUGE = { frame: "rgba(150,150,158,.82)", plenty: "#60c86c", half: "#e8be48", low: "#e86054" };
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function drawFrame(ctx, f) {
+  f.s.forEach((row, y) => {
+    for (let x = 0; x < row.length; x++) {
+      const c = INK[row[x]];
+      if (!c) continue;
+      ctx.fillStyle = c;
+      ctx.fillRect(x, y + f.dy, 1, 1);
+    }
+  });
+  if (f.ball) { ctx.fillStyle = BALL; ctx.fillRect(f.ball[0], f.ball[1], 2, 2); }
 }
 
-fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(rel => {
-    const grid = document.getElementById("downloads");
-    for (const a of rel.assets) {
-      const os = label(a.name);
-      if (!os) continue;
-      const el = document.createElement("a");
-      el.className = "dl";
-      el.href = a.browser_download_url;
-      el.innerHTML = `<div class="os"></div><div class="meta"></div>`;
-      el.querySelector(".os").textContent = os;
-      el.querySelector(".meta").textContent =
-        `${a.name} · ${(a.size / 1048576).toFixed(0)} MB`;
-      grid.appendChild(el);
+// 트레이 아이콘과 같은 구성: 고양이 20칸 + 여백 5칸 + 게이지 20×5
+function drawGauge(ctx, ratio) {
+  const gx = 25, top = 4, h = 5, w = 20;
+  ctx.fillStyle = GAUGE.frame;
+  ctx.fillRect(gx, top, w, 1); ctx.fillRect(gx, top + h - 1, w, 1);
+  ctx.fillRect(gx, top, 1, h); ctx.fillRect(gx + w - 1, top, 1, h);
+  const inner = w - 2;
+  const filled = ratio <= 0 ? 0 : Math.max(1, Math.round(inner * ratio));
+  ctx.fillStyle = ratio < 0.5 ? GAUGE.plenty : ratio < 0.8 ? GAUGE.half : GAUGE.low;
+  ctx.fillRect(gx + 1, top + 1, filled, h - 2);
+}
+
+function animate(canvas, motion, withGauge) {
+  const ctx = canvas.getContext("2d");
+  const frames = DATA.motions[motion];
+  let i = 0, ratio = 0;
+  const tick = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawFrame(ctx, frames[i]);
+    if (withGauge) {
+      drawGauge(ctx, ratio);
+      ratio += 1 / 240; // 10fps × 24초에 한 바퀴 — 색 변화가 보일 만큼 느리게
+      if (ratio > 1.04) ratio = 0;
     }
-    document.getElementById("status").textContent =
-      `${rel.tag_name} · ${new Date(rel.published_at).toLocaleDateString("ko-KR")}`;
-  })
-  .catch(() => {
-    const s = document.getElementById("status");
-    s.innerHTML = `목록을 불러오지 못했습니다. <a href="https://github.com/${REPO}/releases/latest">릴리스 페이지</a>에서 받아주세요.`;
+    i = (i + 1) % frames.length;
+  };
+  tick();
+  if (!REDUCED) setInterval(tick, 1000 / DATA.fps[motion]);
+}
+
+animate(document.getElementById("tray-cat"), "run", true);
+document.querySelectorAll("canvas[data-motion]").forEach((c) => animate(c, c.dataset.motion, false));
+
+// ── KR / EN ──
+const I18N = {
+  ko: {
+    h1: "메뉴바의 작은 고양이가\nClaude 토큰을 지켜봅니다",
+    sub: "TokenCat은 Claude 사용량을 메뉴바에 상시 표시합니다. 고양이의 모션으로 작업 상태를, 게이지로 남은 토큰을 한눈에 확인하세요.",
+    dlLoading: "다운로드 목록을 불러오는 중…",
+    dlFail: '목록을 불러오지 못했습니다. <a href="https://github.com/pangyosim/token-cat/releases/latest">릴리스 페이지</a>에서 받아주세요.',
+    dlNote: "무서명 개인 빌드입니다 — 첫 실행 방법은 <a href=\"#install\">아래 안내</a>를 확인하세요.",
+    mockCaption: "게이지는 쓴 만큼 차오르고, 색으로 경고합니다",
+    statesEyebrow: "MOTIONS",
+    statesH2: "고양이만 봐도 압니다",
+    statesSub: "마지막 Claude 활동 시각에 따라 고양이의 모션이 바뀝니다.",
+    runT: "달리기", runD: "Claude가 지금 일하는 중",
+    ballT: "공놀이", ballD: "방금까지 일했어요",
+    rhythmT: "리듬 타기", rhythmD: "잠시 쉬는 중",
+    sleepT: "잠자기", sleepD: "한동안 조용하네요",
+    helpH2: "설치 안내",
+    helpSub: "개인 프로젝트라 코드 서명이 없습니다. 처음 한 번만 아래 과정이 필요합니다.",
+    helpMac: "서명되지 않은 빌드라 처음 실행 시 경고가 뜹니다. 앱을 우클릭 → 열기 하거나 터미널에서:",
+    helpWin: "zip 압축을 풀고 TokenCat.exe를 실행하세요. SmartScreen 경고가 뜨면 ‘추가 정보 → 실행’을 누르세요.",
+    footRel: "릴리스",
+    macArm: "macOS", macArmMeta: "Apple Silicon · dmg",
+    macX64: "macOS", macX64Meta: "Intel · dmg",
+    winX64: "Windows", winX64Meta: "x64 · zip",
+    winArm: "Windows", winArmMeta: "ARM64 · zip",
+  },
+  en: {
+    h1: "A tiny cat in your menubar\nwatching your Claude tokens",
+    sub: "TokenCat keeps your Claude usage on the menubar. The cat's motion shows what Claude is up to; the gauge shows how much is left.",
+    dlLoading: "Loading downloads…",
+    dlFail: 'Could not load the list. Grab it from the <a href="https://github.com/pangyosim/token-cat/releases/latest">releases page</a>.',
+    dlNote: "Unsigned personal build — see the <a href=\"#install\">first-run notes</a> below.",
+    mockCaption: "The gauge fills as you spend tokens, and warns by color",
+    statesEyebrow: "MOTIONS",
+    statesH2: "The cat tells the story",
+    statesSub: "Its motion follows your most recent Claude activity.",
+    runT: "Running", runD: "Claude is working right now",
+    ballT: "Playing", ballD: "Was working moments ago",
+    rhythmT: "Grooving", rhythmD: "Taking a breather",
+    sleepT: "Sleeping", sleepD: "Quiet for a while",
+    helpH2: "Install notes",
+    helpSub: "This is a personal project without code signing, so the first launch needs one extra step.",
+    helpMac: "macOS warns on the first launch of an unsigned build. Right-click the app → Open, or in a terminal:",
+    helpWin: "Unzip and run TokenCat.exe. If SmartScreen appears, choose “More info → Run anyway”.",
+    footRel: "Releases",
+    macArm: "macOS", macArmMeta: "Apple Silicon · dmg",
+    macX64: "macOS", macX64Meta: "Intel · dmg",
+    winX64: "Windows", winX64Meta: "x64 · zip",
+    winArm: "Windows", winArmMeta: "ARM64 · zip",
+  },
+};
+
+let lang = localStorage.getItem("tokencat-lang")
+  || (navigator.language.startsWith("ko") ? "ko" : "en");
+
+function applyLang() {
+  const t = I18N[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t[el.dataset.i18n]; });
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t[el.dataset.i18nHtml]; });
+  document.getElementById("lang-ko").setAttribute("aria-pressed", String(lang === "ko"));
+  document.getElementById("lang-en").setAttribute("aria-pressed", String(lang === "en"));
+  renderDownloads();
+}
+for (const l of ["ko", "en"]) {
+  document.getElementById(`lang-${l}`).addEventListener("click", () => {
+    lang = l;
+    localStorage.setItem("tokencat-lang", l);
+    applyLang();
   });
+}
+
+// ── 다운로드: 최신 릴리스에서 자산 목록을 읽는다 — 새 버전을 올려도 페이지 수정이 없다 ──
+const REPO = "pangyosim/token-cat";
+let release = null;
+
+function assetKind(name) {
+  if (name.endsWith(".dmg")) return name.includes("arm64") ? "macArm" : "macX64";
+  if (name.includes("win") && name.endsWith(".zip")) return name.includes("arm64") ? "winArm" : "winX64";
+  return null; // blockmap 등은 숨긴다
+}
+
+function renderDownloads() {
+  const t = I18N[lang];
+  const status = document.getElementById("dl-status");
+  const grid = document.getElementById("dl-grid");
+  if (release === null) { status.textContent = t.dlLoading; return; }
+  if (release === "error") { status.innerHTML = t.dlFail; return; }
+
+  const isMac = navigator.userAgent.includes("Mac");
+  const primary = isMac ? "macArm" : "winX64";
+  grid.innerHTML = "";
+  const order = ["macArm", "macX64", "winX64", "winArm"];
+  const byKind = {};
+  for (const a of release.assets) {
+    const kind = assetKind(a.name);
+    if (kind) byKind[kind] = a;
+  }
+  for (const kind of order) {
+    const a = byKind[kind];
+    if (!a) continue;
+    const el = document.createElement("a");
+    el.className = "dl" + (kind === primary ? " primary" : "");
+    el.href = a.browser_download_url;
+    el.innerHTML = '<span class="os"></span><span class="meta"></span>';
+    el.querySelector(".os").textContent = t[kind];
+    el.querySelector(".meta").textContent = `${t[kind + "Meta"]} · ${(a.size / 1048576).toFixed(0)} MB`;
+    grid.appendChild(el);
+  }
+  status.textContent = `${release.tag_name} · ${new Date(release.published_at).toLocaleDateString(lang === "ko" ? "ko-KR" : "en-US")}`;
+}
+
+applyLang();
+fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+  .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then((rel) => { release = rel; renderDownloads(); })
+  .catch(() => { release = "error"; renderDownloads(); });
 </script>
 </body>
 </html>
