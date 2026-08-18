@@ -76,8 +76,8 @@
   }
   a.dl:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--line); }
   a.dl:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--line); }
-  a.dl .os { font-weight: 700; font-size: .92rem; }
-  a.dl .meta { font-size: .74rem; color: var(--muted); margin-top: .15rem; }
+  a.dl .os { display: block; font-weight: 700; font-size: .92rem; }
+  a.dl .meta { display: block; font-size: .74rem; color: var(--muted); margin-top: .15rem; }
   a.dl.primary { background: var(--ink); color: #fff; }
   a.dl.primary .meta { color: #b9b8c4; }
   a.dl.primary .os::after { content: " ↓"; color: var(--green); }
@@ -180,7 +180,7 @@
         <div class="menubar">
           <div class="stub"><i></i><i></i><i></i></div>
           <div class="tray">
-            <canvas id="tray-cat" width="45" height="14" style="height:1.05rem"></canvas>
+            <canvas id="tray-cat" width="45" height="14" style="height:28px"></canvas>
             <span class="clock">9:41</span>
           </div>
         </div>
@@ -203,19 +203,19 @@
     <p class="sec-sub" data-i18n="statesSub"></p>
     <div class="cards">
       <div class="card">
-        <div class="stage"><canvas data-motion="run" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="stage"><canvas data-motion="run" width="20" height="14" style="height:70px" aria-hidden="true"></canvas></div>
         <div class="body"><span class="badge">NOW</span><h3 data-i18n="runT"></h3><p data-i18n="runD"></p></div>
       </div>
       <div class="card">
-        <div class="stage"><canvas data-motion="ball" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="stage"><canvas data-motion="ball" width="20" height="14" style="height:70px" aria-hidden="true"></canvas></div>
         <div class="body"><span class="badge">&lt; 10 MIN</span><h3 data-i18n="ballT"></h3><p data-i18n="ballD"></p></div>
       </div>
       <div class="card">
-        <div class="stage"><canvas data-motion="rhythm" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="stage"><canvas data-motion="rhythm" width="20" height="14" style="height:70px" aria-hidden="true"></canvas></div>
         <div class="body"><span class="badge">&lt; 1 HOUR</span><h3 data-i18n="rhythmT"></h3><p data-i18n="rhythmD"></p></div>
       </div>
       <div class="card">
-        <div class="stage"><canvas data-motion="sleep" width="20" height="14" style="height:4.9rem" aria-hidden="true"></canvas></div>
+        <div class="stage"><canvas data-motion="sleep" width="20" height="14" style="height:70px" aria-hidden="true"></canvas></div>
         <div class="body"><span class="badge">1 HOUR +</span><h3 data-i18n="sleepT"></h3><p data-i18n="sleepD"></p></div>
       </div>
     </div>
