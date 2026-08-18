@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokenCat 다운로드</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: light-dark(#f5f5f7, #1c1c1e); color: light-dark(#1c1c1e, #f5f5f7);
+  }
+  main { max-width: 40rem; padding: 2rem; text-align: center; }
+  h1 { font-size: 2.5rem; margin: 0; }
+  h1 .cat { margin-right: .4rem; }
+  p.desc { color: light-dark(#6e6e73, #98989d); margin: .5rem 0 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .75rem; text-align: left; }
+  a.dl {
+    display: block; padding: 1rem 1.25rem; border-radius: .75rem; text-decoration: none;
+    background: light-dark(#fff, #2c2c2e); color: inherit;
+    border: 1px solid light-dark(#e5e5ea, #3a3a3c);
+  }
+  a.dl:hover { border-color: #0a84ff; }
+  a.dl .os { font-weight: 600; }
+  a.dl .meta { font-size: .8rem; color: light-dark(#6e6e73, #98989d); margin-top: .25rem; }
+  .note { font-size: .8rem; color: light-dark(#6e6e73, #98989d); margin-top: 2rem; line-height: 1.6; }
+  .note code { background: light-dark(#e5e5ea, #3a3a3c); padding: .1rem .35rem; border-radius: .3rem; }
+  #status { color: light-dark(#6e6e73, #98989d); }
+  #status a { color: #0a84ff; }
+</style>
+</head>
+<body>
+<main>
+  <h1><span class="cat">🐱</span>TokenCat</h1>
+  <p class="desc">Claude 토큰 사용량을 메뉴바에 상시 표시하는 앱</p>
+
+  <div id="status">다운로드 목록을 불러오는 중…</div>
+  <div class="grid" id="downloads"></div>
+
+  <p class="note">
+    macOS: 서명되지 않은 빌드라 처음 실행 시 경고가 뜹니다.
+    앱을 우클릭 → 열기 하거나 <code>xattr -cr /Applications/TokenCat.app</code> 를 실행하세요.<br>
+    Windows: zip 압축을 풀고 <code>TokenCat.exe</code> 를 실행하세요.
+  </p>
+</main>
+
+<script>
+const REPO = "pangyosim/token-cat";
+
+// 자산 파일명으로 OS/아키텍처 라벨 결정
+function label(name) {
+  if (name.endsWith(".dmg"))
+    return name.includes("arm64") ? "macOS (Apple Silicon)" : "macOS (Intel)";
+  if (name.includes("win") && name.endsWith(".zip"))
+    return name.includes("arm64") ? "Windows (ARM64)" : "Windows (x64)";
+  return null; // blockmap 등은 숨김
+}
+
+fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(rel => {
+    const grid = document.getElementById("downloads");
+    for (const a of rel.assets) {
+      const os = label(a.name);
+      if (!os) continue;
+      const el = document.createElement("a");
+      el.className = "dl";
+      el.href = a.browser_download_url;
+      el.innerHTML = `<div class="os"></div><div class="meta"></div>`;
+      el.querySelector(".os").textContent = os;
+      el.querySelector(".meta").textContent =
+        `${a.name} · ${(a.size / 1048576).toFixed(0)} MB`;
+      grid.appendChild(el);
+    }
+    document.getElementById("status").textContent =
+      `${rel.tag_name} · ${new Date(rel.published_at).toLocaleDateString("ko-KR")}`;
+  })
+  .catch(() => {
+    const s = document.getElementById("status");
+    s.innerHTML = `목록을 불러오지 못했습니다. <a href="https://github.com/${REPO}/releases/latest">릴리스 페이지</a>에서 받아주세요.`;
+  });
+</script>
+</body>
+</html>
