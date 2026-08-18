@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TokenCat</title>
-<meta name="description" content="Claude 토큰 사용량을 메뉴바에 상시 표시하는 픽셀 고양이 앱">
+<meta name="description" content="고양이가 Claude 토큰 사용량을 알려줘요 — 메뉴바 픽셀 고양이 앱">
 <meta property="og:title" content="TokenCat">
-<meta property="og:description" content="Claude 토큰 사용량을 메뉴바에 상시 표시하는 픽셀 고양이 앱">
+<meta property="og:description" content="고양이가 Claude 토큰 사용량을 알려줘요 — 메뉴바 픽셀 고양이 앱">
 <meta property="og:image" content="https://pangyosim.github.io/token-cat/icon.png">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -35,6 +35,7 @@
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
     line-height: 1.6;
+    word-break: keep-all; /* 한국어를 어절 단위로 줄바꿈 — 음절 중간에서 꺾이면 잘린 것처럼 보인다 */
   }
   .wrap { max-width: 60rem; margin: 0 auto; padding: 0 1.25rem; }
   canvas { image-rendering: pixelated; display: block; }
@@ -62,8 +63,7 @@
   .hero { padding: 4rem 0 3.5rem; }
   .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3rem; align-items: center; }
   .eyebrow { font-family: var(--pixel); font-size: .6rem; color: var(--green-deep); margin: 0 0 1rem; }
-  h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.32; margin: 0 0 1rem; white-space: pre-line; letter-spacing: -.01em; }
-  .sub { color: var(--muted); margin: 0 0 2rem; max-width: 30rem; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.32; margin: 0 0 1.8rem; letter-spacing: -.01em; }
 
   /* 다운로드 */
   .dl-status { font-family: var(--pixel); font-size: .6rem; color: var(--muted); margin-bottom: .75rem; }
@@ -78,9 +78,6 @@
   a.dl:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--line); }
   a.dl .os { display: block; font-weight: 700; font-size: .92rem; }
   a.dl .meta { display: block; font-size: .74rem; color: var(--muted); margin-top: .15rem; }
-  a.dl.primary { background: var(--ink); color: #fff; }
-  a.dl.primary .meta { color: #b9b8c4; }
-  a.dl.primary .os::after { content: " ↓"; color: var(--green); }
   .dl-note { font-size: .78rem; color: var(--muted); margin-top: .9rem; }
   .dl-note a { color: var(--green-deep); }
 
@@ -170,7 +167,6 @@
     <div>
       <p class="eyebrow">CLAUDE TOKEN MONITOR</p>
       <h1 data-i18n="h1"></h1>
-      <p class="sub" data-i18n="sub"></p>
       <p class="dl-status" id="dl-status"></p>
       <div class="dl-grid" id="dl-grid"></div>
       <p class="dl-note" data-i18n-html="dlNote"></p>
@@ -307,8 +303,7 @@ document.querySelectorAll("canvas[data-motion]").forEach((c) => animate(c, c.dat
 // ── KR / EN ──
 const I18N = {
   ko: {
-    h1: "메뉴바의 작은 고양이가\nClaude 토큰을 지켜봅니다",
-    sub: "TokenCat은 Claude 사용량을 메뉴바에 상시 표시합니다. 고양이의 모션으로 작업 상태를, 게이지로 남은 토큰을 한눈에 확인하세요.",
+    h1: "고양이가 Claude 토큰 사용량을 알려줘요",
     dlLoading: "다운로드 목록을 불러오는 중…",
     dlFail: '목록을 불러오지 못했습니다. <a href="https://github.com/pangyosim/token-cat/releases/latest">릴리스 페이지</a>에서 받아주세요.',
     dlNote: "무서명 개인 빌드입니다 — 첫 실행 방법은 <a href=\"#install\">아래 안내</a>를 확인하세요.",
@@ -331,8 +326,7 @@ const I18N = {
     winArm: "Windows", winArmMeta: "ARM64 · zip",
   },
   en: {
-    h1: "A tiny cat in your menubar\nwatching your Claude tokens",
-    sub: "TokenCat keeps your Claude usage on the menubar. The cat's motion shows what Claude is up to; the gauge shows how much is left.",
+    h1: "The cat tells you your Claude token usage",
     dlLoading: "Loading downloads…",
     dlFail: 'Could not load the list. Grab it from the <a href="https://github.com/pangyosim/token-cat/releases/latest">releases page</a>.',
     dlNote: "Unsigned personal build — see the <a href=\"#install\">first-run notes</a> below.",
@@ -393,8 +387,6 @@ function renderDownloads() {
   if (release === null) { status.textContent = t.dlLoading; return; }
   if (release === "error") { status.innerHTML = t.dlFail; return; }
 
-  const isMac = navigator.userAgent.includes("Mac");
-  const primary = isMac ? "macArm" : "winX64";
   grid.innerHTML = "";
   const order = ["macArm", "macX64", "winX64", "winArm"];
   const byKind = {};
@@ -406,7 +398,7 @@ function renderDownloads() {
     const a = byKind[kind];
     if (!a) continue;
     const el = document.createElement("a");
-    el.className = "dl" + (kind === primary ? " primary" : "");
+    el.className = "dl";
     el.href = a.browser_download_url;
     el.innerHTML = '<span class="os"></span><span class="meta"></span>';
     el.querySelector(".os").textContent = t[kind];
