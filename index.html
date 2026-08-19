@@ -75,7 +75,6 @@
   .mock-block { grid-area: mock; align-self: center; }
   .eyebrow { font-family: var(--pixel); font-size: .6rem; color: var(--green-deep); margin: 0 0 1rem; }
   h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.32; margin: 0 0 1.8rem; letter-spacing: -.01em; }
-  .h1-br { display: none; } /* 폰에서만 지정한 자리에서 줄을 바꾼다 */
 
   /* 다운로드 */
   .dl-status { font-family: var(--pixel); font-size: .6rem; color: var(--muted); margin-bottom: .75rem; }
@@ -167,7 +166,6 @@
   }
   @media (max-width: 480px) {
     .dl-grid { grid-template-columns: 1fr; }
-    .h1-br { display: inline; }
     /* 좁은 화면에서는 시계를 빼야 트레이가 창 절반 안에 든다 — 시계는 장식일 뿐이다 */
     .menubar .clock { display: none; }
   }
@@ -344,7 +342,7 @@ document.querySelectorAll("canvas[data-motion]").forEach((c) => animate(c, c.dat
 // ── KR / EN ──
 const I18N = {
   ko: {
-    h1: "Claude 토큰,<br class=\"h1-br\"> 고양이가 세고 있어요",
+    h1: "Claude 토큰<br> 고양이가 세고 있어요",
     dlLoading: "다운로드 목록을 불러오는 중…",
     dlFail: '목록을 불러오지 못했습니다. <a href="https://github.com/pangyosim/token-cat/releases/latest">릴리스 페이지</a>에서 받아주세요.',
     dlNote: "무서명 개인 빌드입니다 — 첫 실행 방법은 <a href=\"#install\">아래 안내</a>를 확인하세요.",
@@ -367,7 +365,7 @@ const I18N = {
     winArm: "Windows", winArmMeta: "ARM64 · zip",
   },
   en: {
-    h1: "Your Claude tokens — the cat is counting",
+    h1: "Your Claude tokens<br> the cat is counting",
     dlLoading: "Loading downloads…",
     dlFail: 'Could not load the list. Grab it from the <a href="https://github.com/pangyosim/token-cat/releases/latest">releases page</a>.',
     dlNote: "Unsigned personal build — see the <a href=\"#install\">first-run notes</a> below.",
