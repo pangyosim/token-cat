@@ -32,6 +32,7 @@
   * { box-sizing: border-box; }
   /* 모바일 브라우저의 텍스트 자동 확대가 트레이 시계·캔버스 주변 배치를 깨뜨린다 */
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html, body { overflow-x: clip; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
@@ -147,6 +148,9 @@
   footer a { color: var(--green-deep); }
 
   @media (max-width: 800px) {
+    /* 일부 모바일 브라우저(삼성 인터넷)가 오른쪽 스크롤바 자리를 상시 확보해 빈 공간이 생긴다 */
+    html { scrollbar-width: none; }
+    html::-webkit-scrollbar { width: 0; display: none; }
     .hero { padding: 2.5rem 0; }
     .hero .wrap { grid-template-columns: 1fr; grid-template-areas: "intro" "mock" "dl"; row-gap: 2rem; }
     h1 { margin-bottom: 0; }
