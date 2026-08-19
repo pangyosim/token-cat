@@ -148,7 +148,9 @@
   }
   .help-card pre {
     background: var(--ink); color: var(--green); padding: .6rem .8rem; border-radius: .5rem;
-    margin: .7rem 0 0; overflow-x: auto;
+    margin: .7rem 0 0; max-width: 100%; overflow-x: auto;
+    /* 좁은 화면에서 명령이 가장자리에 붙지 않게 어절 단위로 줄바꿈한다 */
+    white-space: pre-wrap; word-break: break-word;
   }
 
   footer { border-top: 2px solid var(--line); padding: 1.4rem 0 2rem; font-size: .8rem; color: var(--muted); }
