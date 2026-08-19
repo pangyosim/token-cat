@@ -100,19 +100,19 @@
     background: linear-gradient(160deg, var(--lav-top), var(--lav-bottom));
   }
   .menubar {
-    display: flex; align-items: center; gap: .9rem; padding: .4rem .8rem;
+    display: flex; align-items: center; gap: .7rem; padding: .28rem .8rem;
     overflow: hidden; /* 어떤 환경에서도 고양이가 바 밖으로 삐져나오지 않게 */
     background: rgba(255, 255, 255, .88); backdrop-filter: blur(6px);
     border-bottom: 1px solid rgba(23, 23, 28, .22);
   }
   .menubar .stub { display: flex; gap: .6rem; flex-shrink: 1; min-width: 0; overflow: hidden; }
   .menubar .stat {
-    font-size: .72rem; font-weight: 600; color: rgba(23, 23, 28, .85);
+    font-size: .62rem; font-weight: 600; color: rgba(23, 23, 28, .85);
     font-variant-numeric: tabular-nums; white-space: nowrap;
   }
-  .menubar .stub i { display: block; width: 1.6rem; height: .45rem; border-radius: .25rem; background: rgba(23, 23, 28, .18); }
-  .menubar .tray { margin-left: auto; display: flex; align-items: center; gap: .7rem; }
-  .menubar .clock { font-size: .72rem; font-weight: 600; color: rgba(23, 23, 28, .75); font-variant-numeric: tabular-nums; }
+  .menubar .stub i { display: block; width: 1.3rem; height: .36rem; border-radius: .2rem; background: rgba(23, 23, 28, .18); }
+  .menubar .tray { margin-left: auto; display: flex; align-items: center; gap: .55rem; }
+  .menubar .clock { font-size: .62rem; font-weight: 600; color: rgba(23, 23, 28, .75); font-variant-numeric: tabular-nums; }
   .mock .desk { height: 11rem; position: relative; }
   .mock .hint {
     position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%);
@@ -203,7 +203,7 @@
         <div class="menubar">
           <div class="stub"><i></i><i></i><i></i></div>
           <div class="tray">
-            <canvas id="tray-cat" width="65" height="14" style="width:130px;height:28px"></canvas>
+            <canvas id="tray-cat" width="65" height="14" style="width:97.5px;height:21px"></canvas>
             <span class="stat" id="tray-stat"></span>
             <span class="clock">9:41</span>
           </div>
