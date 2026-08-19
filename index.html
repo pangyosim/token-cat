@@ -163,6 +163,8 @@
     h1 { margin-bottom: 0; }
     .help-grid { grid-template-columns: 1fr; }
     .mock .desk { height: 8rem; }
+    /* 모바일에서는 헤더 문구(eyebrow·제목·부제)를 가운데 정렬한다 */
+    .eyebrow, h1, h2, .sec-sub { text-align: center; }
   }
   @media (max-width: 480px) {
     .dl-grid { grid-template-columns: 1fr; }
@@ -342,20 +344,20 @@ document.querySelectorAll("canvas[data-motion]").forEach((c) => animate(c, c.dat
 // ── KR / EN ──
 const I18N = {
   ko: {
-    h1: "Claude 토큰<br> 고양이가 세고 있어요",
+    h1: "Claude 토큰 사용량<br> 고양이가 알려줘요",
     dlLoading: "다운로드 목록을 불러오는 중…",
     dlFail: '목록을 불러오지 못했습니다. <a href="https://github.com/pangyosim/token-cat/releases/latest">릴리스 페이지</a>에서 받아주세요.',
     dlNote: "무서명 개인 빌드입니다 — 첫 실행 방법은 <a href=\"#install\">아래 안내</a>를 확인하세요.",
     mockCaption: "토큰 사용량만큼 색이 변해요.",
     statesEyebrow: "MOTIONS",
     statesH2: "고양이만 봐도 압니다",
-    statesSub: "마지막 Claude 활동 시각에 따라 고양이의 모션이 바뀝니다.",
+    statesSub: "Claude 활동에 따라 고양이 모션이 바뀌어요.",
     runT: "달리기", runD: "Claude가 지금 일하는 중",
     ballT: "공놀이", ballD: "방금까지 일했어요",
     rhythmT: "리듬 타기", rhythmD: "잠시 쉬는 중",
     sleepT: "잠자기", sleepD: "한동안 조용하네요",
     helpH2: "설치 안내",
-    helpSub: "개인 프로젝트라 코드 서명이 없습니다. 처음 한 번만 아래 과정이 필요합니다.",
+    helpSub: "개인 프로젝트라 아래 과정이 필요합니다.",
     helpMac: "서명되지 않은 빌드라 처음 실행 시 경고가 뜹니다. 앱을 우클릭 → 열기 하거나 터미널에서:",
     helpWin: "zip 압축을 풀고 TokenCat.exe를 실행하세요. SmartScreen 경고가 뜨면 ‘추가 정보 → 실행’을 누르세요.",
     footRel: "릴리스",
@@ -365,20 +367,20 @@ const I18N = {
     winArm: "Windows", winArmMeta: "ARM64 · zip",
   },
   en: {
-    h1: "Your Claude tokens<br> the cat is counting",
+    h1: "Your Claude usage<br> the cat tells you",
     dlLoading: "Loading downloads…",
     dlFail: 'Could not load the list. Grab it from the <a href="https://github.com/pangyosim/token-cat/releases/latest">releases page</a>.',
     dlNote: "Unsigned personal build — see the <a href=\"#install\">first-run notes</a> below.",
     mockCaption: "The color changes as you use tokens.",
     statesEyebrow: "MOTIONS",
     statesH2: "The cat tells the story",
-    statesSub: "Its motion follows your most recent Claude activity.",
+    statesSub: "The cat's motion changes with your Claude activity.",
     runT: "Running", runD: "Claude is working right now",
     ballT: "Playing", ballD: "Was working moments ago",
     rhythmT: "Grooving", rhythmD: "Taking a breather",
     sleepT: "Sleeping", sleepD: "Quiet for a while",
     helpH2: "Install notes",
-    helpSub: "This is a personal project without code signing, so the first launch needs one extra step.",
+    helpSub: "It's a personal project, so these steps are needed.",
     helpMac: "macOS warns on the first launch of an unsigned build. Right-click the app → Open, or in a terminal:",
     helpWin: "Unzip and run TokenCat.exe. If SmartScreen appears, choose “More info → Run anyway”.",
     footRel: "Releases",
