@@ -37,12 +37,3 @@
 
 - **macOS**: 앱을 우클릭 → 열기 하거나 `xattr -cr /Applications/TokenCat.app` 실행
 - **Windows**: zip 압축을 풀고 `TokenCat.exe` 실행 (SmartScreen이 뜨면 추가 정보 → 실행)
-
-## 배포 메모
-
-다운로드 페이지(`index.html`)는 최신 릴리스를 GitHub API로 읽어오므로,
-새 버전은 릴리스만 올리면 됩니다:
-
-```
-gh release create vX.Y.Z -R pangyosim/token-cat dist/*.dmg dist/*win.zip
-```
