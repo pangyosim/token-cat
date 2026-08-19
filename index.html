@@ -156,6 +156,19 @@
   footer { border-top: 2px solid var(--line); padding: 1.4rem 0 2rem; font-size: .8rem; color: var(--muted); }
   footer a { color: var(--green-deep); }
 
+  /* ── 후원 플로팅 버튼 (챗봇 FAB) ── */
+  .coffee-fab {
+    position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 50;
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .7rem 1.05rem; text-decoration: none; font-weight: 700; font-size: .92rem;
+    color: #fff; background: #ff5e5b; /* Ko-fi 코랄 — 다운로드(검정)와 구분되는 CTA */
+    border: 2px solid var(--line); border-radius: 999px;
+    box-shadow: 3px 3px 0 var(--line); transition: transform .1s, box-shadow .1s;
+  }
+  .coffee-fab:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--line); }
+  .coffee-fab:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--line); }
+  .coffee-ico { font-size: 1.1rem; line-height: 1; }
+
   @media (max-width: 800px) {
     /* 일부 모바일 브라우저(삼성 인터넷)가 오른쪽 스크롤바 자리를 상시 확보해 빈 공간이 생긴다 */
     html { scrollbar-width: none; }
@@ -172,6 +185,10 @@
     .dl-grid { grid-template-columns: 1fr; }
     /* 좁은 화면에서는 시계를 빼야 트레이가 창 절반 안에 든다 — 시계는 장식일 뿐이다 */
     .menubar .clock { display: none; }
+    /* 모바일에선 콘텐츠를 안 가리게 동그란 아이콘 버튼으로 */
+    .coffee-fab { right: .9rem; bottom: .9rem; padding: .7rem; }
+    .coffee-label { display: none; }
+    .coffee-ico { font-size: 1.25rem; }
   }
 </style>
 </head>
@@ -281,6 +298,12 @@
   </div>
 </footer>
 
+<!-- 오른쪽 아래 고정 후원 버튼 (챗봇 FAB 스타일) -->
+<a class="coffee-fab" href="https://ko-fi.com/vksdev" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee">
+  <span class="coffee-ico" aria-hidden="true">☕</span>
+  <span class="coffee-label" data-i18n="coffee"></span>
+</a>
+
 <script>
 // ── 앱과 같은 스프라이트 데이터 (tools 의 dump-frames.mjs 가 src/cat.ts 에서 추출) ──
 const DATA = {"motions":{"rhythm":[{"s":["....................","....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo...","..obo.obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................",".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...",".obo..obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...",".obo..obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................",".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo...","..obo.obbbebbbebo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0}],"run":[{"s":["....................","......oo.....oo.....","......obo...obo.....","......obbooobbo.....","..oo.obbbbbbbbbo....",".obo.obbbbbbbbbo....",".obo.obbbebbbebo....",".obo.obbbbwwwbbo....",".obbooobbwwwwwo.....","..obbbbooooooo......","...ooobbbbbbbbo.....",".....obbbbbbbbo.....",".....owowoowowo.....","...................."],"dy":-1},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","..oo..obbbbbbbbbo...",".obo..obbbbbbbbbo...",".obo..obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.owowo.....",".....owowo.........."],"dy":0},{"s":["....................","........oo.....oo...","........obo...obo...","........obbooobbo...","..oo...obbbbbbbbbo..",".obo...obbbbbbbbbo..","..obo..obbbebbbebo..","...obo.obbbbwwwbbo..","...obbooobbwwwwwo...","....obbbbooooooo....","....obbbbbbbbbbo....","....obbbbbbbbbbo....","....obobo..owowo....","....owowo..........."],"dy":0},{"s":["....................",".........oo.....oo..",".........obo...obo..",".........obbooobbo..","..oo....obbbbbbbbbo.","..obo...obbbbbbbbbo.","...obo..obbbebbbebo.","....obo.obbbbwwwbbo.","....obbooobbwwwwwo..","...obbbbbooooooo....","...obbbbbbbbbbbbo...","...obbbbbbbbbbbbo...","...obobo....obobo...","...owowo....owowo..."],"dy":-1},{"s":["....................","........oo.....oo...","........obo...obo...","........obbooobbo...","..oo...obbbbbbbbbo..",".obo...obbbbbbbbbo..","..obo..obbbebbbebo..","...obo.obbbbwwwbbo..","...obbooobbwwwwwo...","....obbbbooooooo....","....obbbbbbbbbbo....","....obbbbbbbbbbo....","....owowo..obobo....","...........owowo...."],"dy":0},{"s":["....................","......oo.....oo.....","......obo...obo.....",".......obbooobbo....","..oo..obbbbbbbbbo...",".obo..obbbbbbbbbo...",".obo..obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....owowo.obobo.....",".........owowo......"],"dy":0}],"ball":[{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,12]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,9]},{"s":[".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,6]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooooow..","....obbbbbbbbbooo...","....obbbbbbbbbo.....","....obobo...........","....owowo..........."],"dy":-1,"ball":[18,4]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooooow..","....obbbbbbbbbooo...","....obbbbbbbbbo.....","....obobo...........","....owowo..........."],"dy":-1,"ball":[18,3]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooooow..","....obbbbbbbbbooo...","....obbbbbbbbbo.....","....obobo...........","....owowo..........."],"dy":-1,"ball":[18,5]},{"s":[".......o......o.....",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,8]},{"s":["....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","...oo.obbbbbbbbbo...","..obo.obbbbbbbbbo...","..obo.obbbebbbebo...","..obo.obbbbwwwbbo...","..obbooobbwwwwwo....","...obbbbooooooo.....","....obbbbbbbbbo.....","....obbbbbbbbbo.....","....obobo.obobo.....","....owowo.owowo....."],"dy":0,"ball":[18,11]}],"sleep":[{"s":["....................","....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo...","..obo.obboobboobo...",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................",".......oo.....oo....",".......obo...obo....",".......obbooobbo....","......obbbbbbbbbo...","...oo.obbbbbbbbbo.zz","..obo.obboobboobo..z",".oboooobbbbbbbbbo.zz",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["....................","....................","....................",".......oo.....oo..zz",".......obo...obo...z",".......obbooobbo..zz","......obbbbbbbbbo.zz","...oo.obbbbbbbbbo..z","..obo.obboobboobo.zz",".oboooobbbbbbbbbo...",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0},{"s":["..................zz","...................z",".......oo.....oo..zz",".......obo...obo..zz",".......obbooobbo...z","......obbbbbbbbbo.zz","...oo.obbbbbbbbbo.zz","..obo.obboobboobo..z",".oboooobbbbbbbbbo.zz",".obobbbobbbwwwbo....","..obbbbbooooooo.....","..obbbbbbbbbbbo.....","..obbbbbbbbbbbo.....","...owwwooowowo......"],"dy":0}]},"fps":{"rhythm":2,"run":10,"ball":5,"sleep":1}};
@@ -363,6 +386,7 @@ const I18N = {
     helpMac: "서명되지 않은 빌드라 처음 실행 시 경고가 떠요. 앱을 우클릭 → 열기 를 누르거나, 아래 명령을 터미널에 입력하세요.",
     helpWin: "zip 압축을 풀고 TokenCat.exe를 실행하세요. SmartScreen 경고가 뜨면 ‘추가 정보 → 실행’을 누르세요.",
     footRel: "릴리스",
+    coffee: "커피 한 잔",
     macArm: "macOS", macArmMeta: "Apple Silicon · dmg",
     macX64: "macOS", macX64Meta: "Intel · dmg",
     winX64: "Windows", winX64Meta: "x64 · zip",
@@ -386,6 +410,7 @@ const I18N = {
     helpMac: "macOS warns on the first launch of an unsigned build. Right-click the app → Open, or run this command in a terminal.",
     helpWin: "Unzip and run TokenCat.exe. If SmartScreen appears, choose “More info → Run anyway”.",
     footRel: "Releases",
+    coffee: "Buy me a coffee",
     macArm: "macOS", macArmMeta: "Apple Silicon · dmg",
     macX64: "macOS", macX64Meta: "Intel · dmg",
     winX64: "Windows", winX64Meta: "x64 · zip",
