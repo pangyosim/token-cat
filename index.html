@@ -316,13 +316,14 @@ function animate(canvas, motion, withGauge) {
     drawFrame(ctx, frames[i]);
     if (withGauge) {
       drawGauge(ctx, ratio);
-      // 실제 상태바처럼 남은 토큰 · 사용률 · 리셋까지 남은 시간을 게이지와 연동해 보여준다
+      // 실제 상태바처럼 사용 토큰 · 사용률 · 리셋까지 남은 시간을 게이지와 연동해 보여준다.
+      // 게이지가 차오르는 만큼 토큰도 늘어난다 — 줄어들면 게이지와 방향이 어긋나 보인다.
       const TOTAL = 58_000_000;
       const used = Math.min(ratio, 1);
-      const left = ((TOTAL * (1 - used)) / 1e6).toFixed(2);
+      const usedTok = ((TOTAL * used) / 1e6).toFixed(2);
       const pct = used * 100;
       document.getElementById("tray-stat").textContent =
-        `${left}M ${pct.toFixed(pct < 10 ? 1 : 0)}% 1d7h`;
+        `${usedTok}M ${pct.toFixed(pct < 10 ? 1 : 0)}% 1d7h`;
       ratio += 1 / 240; // 10fps × 24초에 한 바퀴 — 색 변화가 보일 만큼 느리게
       if (ratio > 1.04) ratio = 0;
     }
